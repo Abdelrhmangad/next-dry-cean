@@ -11,7 +11,7 @@ const Home: NextPage = () => {
 	const [todaysFormattedDate, setTodaysFormattedDate] = useState(
 		new Date().toISOString().slice(0, 10)
 	);
-	const { register, watch, handleSubmit } = useForm();
+	const { register, watch, setValue, handleSubmit } = useForm();
 	const [success, setSuccess] = useState(false);
 	const [totalDayIncome, setTotalDayIncome] = useState(0);
 	const [totalDayExpenses, setTotalDayExpenses] = useState(0);
@@ -70,7 +70,7 @@ const Home: NextPage = () => {
 			<main>
 				<div className="container singlepage-container flex justify-content-center">
 					<form
-						className="w-full mt-5 bg-gray-200 p-4 my-5 px-8"
+						className="w-full mt-5 bg-gray-200 py-7 rounded-md my-5 px-8"
 						onSubmit={handleSubmit(submitDayData)}
 					>
 						<h1 className="text-center text-2xl text-blue-700 underline mb-5">
@@ -85,6 +85,10 @@ const Home: NextPage = () => {
 									type="date"
 									className="w-full max-w-[200px] p-2 text-2xl rounded-md my-2 border-2 border-gray-400"
 									placeholder="التاريخ"
+									onChange={(e) => {
+										setValue("date", e.target.value);
+										setTodaysFormattedDate(e.target.value);
+									}}
 								/>
 							</div>
 							<div className="relative">
@@ -140,7 +144,7 @@ const Home: NextPage = () => {
 								</p>
 							) : (
 								<button className="py-4 px-10 focus:bg-blue-400 bg-blue-600 self-center text-center text-white font-black rounded-md my-4">
-									ارســـال
+									حفظ البيانات
 								</button>
 							)}
 						</div>

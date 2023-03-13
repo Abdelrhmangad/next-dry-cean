@@ -5,12 +5,12 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 function initFirebase() {
 	const firebaseConfig = {
-		apiKey: process.env.NEXT_PUBLIC_apiKey,
-		authDomain: process.env.NEXT_PUBLIC_authDomain,
-		projectId: process.env.NEXT_PUBLIC_projectId,
-		storageBucket: process.env.NEXT_PUBLIC_storageBucket,
-		messagingSenderId: process.env.NEXT_PUBLIC_messagingSenderId,
-		appId: process.env.NEXT_PUBLIC_appId
+		apiKey: "AIzaSyD1RcqZDrkDFqWmHVn_oAJnIZwX8TGrlAA",
+		authDomain: "truckvin-600c0.firebaseapp.com",
+		projectId: "truckvin-600c0",
+		storageBucket: "truckvin-600c0.appspot.com",
+		messagingSenderId: "1021007029122",
+		appId: "1:1021007029122:web:ba6ac10dc9b1eb6cd3259b"
 	};
 
 	// Initialize Firebase

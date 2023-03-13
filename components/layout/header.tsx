@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Header(props: any) {
 	return (
-		<div className="flex items-center justify-between h-full">
+		<div className="flex items-center justify-between h-full px-10">
 			<div className="my-auto">
 				<Link href="/">
 					<button className="font-semibold">دراي كلين الجامعه</button>

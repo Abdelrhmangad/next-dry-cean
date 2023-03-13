@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { format } from "date-fns";
 import { database } from "../lib/firebaseConfig";
+import Head from "next/head";
 
 export default function Dashboard() {
 	const [selectedMonthDays, setSelectedMonthDays] = useState([]);
@@ -91,96 +92,102 @@ export default function Dashboard() {
 	};
 
 	return (
-		<div>
-			<main>
-				<div className="container dashboard-container">
-					<div className="dashboard-header">
-						<h1 className="text-center text-xl w-full py-5 font-bold">
-							ايرادات شهر {currentMonth}
-						</h1>
-					</div>
-					<div className="applications-table overflow-x-auto">
-						<table id="table">
-							<thead>
-								<tr className="text-xl">
-									<th>تاريخ اليوم</th>
-									<th>الايراد الكلي</th>
-									<th>المصروفات الكليه</th>
-									<th>مسحوبات الحج محمد</th>
-									<th>مسحوبات باسم</th>
-									<th>صافي مصروفات اليوم</th>
-									<th>صافي ايرادات اليوم</th>
+		<>
+			<Head>
+				<title>دراي كلين الجامعة</title>
+			</Head>
+			<div>
+				<main>
+					<div className="container dashboard-container">
+						<div className="dashboard-header">
+							<h1 className="text-center text-xl w-full py-5 font-bold">
+								ايرادات شهر {currentMonth}
+							</h1>
+						</div>
+						<div className="applications-table overflow-x-auto">
+							<table id="table">
+								<thead>
+									<tr className="text-xl">
+										<th>تاريخ اليوم</th>
+										<th>الايراد الكلي</th>
+										<th>المصروفات الكليه</th>
+										<th>مسحوبات الحج محمد</th>
+										<th>مسحوبات باسم</th>
+										<th>صافي مصروفات اليوم</th>
+										<th>صافي ايرادات اليوم</th>
+									</tr>
+								</thead>
+								<tbody>
+									{selectedMonthDays.map(
+										(eachDay: any, index) => (
+											<tr key={index}>
+												<td>{eachDay.date}</td>
+												<td>
+													{eachDay.income}{" "}
+													<sub>ج.م</sub>
+												</td>
+												<td>
+													{eachDay.expenses}{" "}
+													<sub>ج.م</sub>
+												</td>
+												<td>
+													{eachDay.expensesEl7ag}{" "}
+													<sub>ج.م</sub>
+												</td>
+												<td>
+													{eachDay.expensesBassem}{" "}
+													<sub>ج.م</sub>
+												</td>
+												<td>
+													{eachDay.total_day_expenses}{" "}
+													<sub>ج.م</sub>
+												</td>
+												<td>
+													{eachDay.total_day_income}{" "}
+													<sub>ج.م</sub>
+												</td>
+											</tr>
+										)
+									)}
+								</tbody>
+								<br />
+								<tr className="secondHead">
+									<td>شهر</td>
+									<td>إجمــالي ايرادات الشهر</td>
+									<td>إجمــالي المصروفات</td>
+									<td>اجمالي مسحويات الحاج</td>
+									<td>اجمالي مسحويات باسم</td>
+									<td>صافي مصروفات الشهر</td>
+									<td>صافي ايرادات الشهر</td>
 								</tr>
-							</thead>
-							<tbody>
-								{selectedMonthDays.map(
-									(eachDay: any, index) => (
-										<tr key={index}>
-											<td>{eachDay.date}</td>
-											<td>
-												{eachDay.income} <sub>ج.م</sub>
-											</td>
-											<td>
-												{eachDay.expenses}{" "}
-												<sub>ج.م</sub>
-											</td>
-											<td>
-												{eachDay.expensesEl7ag}{" "}
-												<sub>ج.م</sub>
-											</td>
-											<td>
-												{eachDay.expensesBassem}{" "}
-												<sub>ج.م</sub>
-											</td>
-											<td>
-												{eachDay.total_day_expenses}{" "}
-												<sub>ج.م</sub>
-											</td>
-											<td>
-												{eachDay.total_day_income}{" "}
-												<sub>ج.م</sub>
-											</td>
-										</tr>
-									)
-								)}
-							</tbody>
-							<br />
-							<tr className="secondHead">
-								<td>شهر</td>
-								<td>إجمــالي ايرادات الشهر</td>
-								<td>إجمــالي المصروفات</td>
-								<td>اجمالي مسحويات الحاج</td>
-								<td>اجمالي مسحويات باسم</td>
-								<td>صافي مصروفات الشهر</td>
-								<td>صافي ايرادات الشهر</td>
-							</tr>
-							<tr className="secondBody">
-								<td>{currentMonth}</td>
-								<td>
-									{allMonthIncome} <sub>ج.م</sub>
-								</td>
-								<td>
-									{allMonthExpenses}
-									<sub>ج.م</sub>
-								</td>
-								<td>
-									{totalEl7agExpenses} <sub>ج.م</sub>
-								</td>
-								<td>
-									{totalBassemExpenses} <sub>ج.م</sub>
-								</td>
-								<td>
-									{totalMonthExpenses} <sub>ج.م</sub>
-								</td>
-								<td>
-									{totalMonthIncome} <sub>ج.م</sub>
-								</td>
-							</tr>
-						</table>
+								<tr className="secondBody">
+									<td>{currentMonth}</td>
+									<td>
+										{allMonthIncome} <sub>ج.م</sub>
+									</td>
+									<td>
+										{allMonthExpenses}
+										<sub>ج.م</sub>
+									</td>
+									<td>
+										{totalEl7agExpenses} <sub>ج.م</sub>
+									</td>
+									<td>
+										{totalBassemExpenses} <sub>ج.م</sub>
+									</td>
+									<td>
+										{totalMonthExpenses} <sub>ج.م</sub>
+									</td>
+									<td>
+										{totalMonthIncome} <sub>ج.م</sub>
+									</td>
+								</tr>
+							</table>
+						</div>
 					</div>
-				</div>
-			</main>
-		</div>
+				</main>
+			</div>
+		</>
 	);
 }
 
