@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { database } from "../lib/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
 import { format } from "date-fns";
+import ExpensesHandler from "../components/ExpensesHandler";
 
 const Home: NextPage = () => {
 	const [todaysFormattedDate, setTodaysFormattedDate] = useState(
@@ -76,42 +77,84 @@ const Home: NextPage = () => {
 						<h1 className="text-center text-2xl text-blue-700 underline mb-5">
 							تسجيل ايراد يوم {todaysFormattedDate}!
 						</h1>
+						<div className="relative">
+							<label
+								htmlFor="date"
+								className="font-bold text-lg mb-2"
+							>
+								اليوم
+							</label>
+							<input
+								{...register("date")}
+								value={`${todaysFormattedDate}`}
+								required
+								id="date"
+								type="date"
+								className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400 mb-5"
+								placeholder="التاريخ"
+								onChange={(e) => {
+									setValue("date", e.target.value);
+									setTodaysFormattedDate(e.target.value);
+								}}
+							/>
+						</div>
+
 						<div className="inputs-container flex flex-col w-full">
-							<div className="relative">
-								<input
-									{...register("date")}
-									value={`${todaysFormattedDate}`}
-									required
-									type="date"
-									className="w-full max-w-[200px] p-2 text-2xl rounded-md my-2 border-2 border-gray-400"
-									placeholder="التاريخ"
-									onChange={(e) => {
-										setValue("date", e.target.value);
-										setTodaysFormattedDate(e.target.value);
-									}}
-								/>
-							</div>
-							<div className="relative">
-								<input
-									{...register("income")}
-									required
-									type="number"
-									min="0"
-									placeholder="اجمالي ايرادات اليوم"
-									className="w-full max-w-[200px] p-2 text-2xl rounded-md my-2 border-2 border-gray-400"
-									inputMode="numeric"
-								/>
-							</div>
-							<div className="relative">
-								<input
-									{...register("expenses")}
-									required
-									type="number"
-									min="0"
-									placeholder="اجمالي مصروفات اليوم"
-									className="w-full max-w-[200px] p-2 text-2xl rounded-md my-2 border-2 border-gray-400"
-									inputMode="numeric"
-								/>
+							<div className="border border-black p-4 mb-5">
+								<h3 className="font-bold text-lg mb-2">
+									تفاصيل الإيراد:
+								</h3>
+								<div className="mx-5">
+									<label
+										htmlFor="dry-wash"
+										className="text-lg"
+									>
+										غسيل ومكواه:
+									</label>
+									<input
+										id="dry-wash"
+										name="dry-wash"
+										required
+										type="number"
+										min="0"
+										placeholder="اجمالي ايرادات الغسيل والمكواه"
+										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									/>
+								</div>
+								<div className="mx-5">
+									<label
+										htmlFor="dry-wash"
+										className="text-lg"
+									>
+										صبغه:
+									</label>
+									<input
+										id="dry-wash"
+										name="dry-wash"
+										required
+										type="number"
+										min="0"
+										placeholder="اجمالي ايرادات الصبغة"
+										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									/>
+								</div>
+								<div className="mx-5">
+									<label
+										htmlFor="dry-wash"
+										className="text-lg"
+									>
+										غسيل سجاد وبطاطين:
+									</label>
+									<input
+										id="dry-wash"
+										name="dry-wash"
+										required
+										type="number"
+										min="0"
+										placeholder="اجمالي ايرادات غسيل السجاد والبطاطين"
+										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									/>
+								</div>
 							</div>
 							<div className="relative">
 								<input
@@ -119,7 +162,7 @@ const Home: NextPage = () => {
 									type="number"
 									min="0"
 									placeholder="مسحوبات الحج محمد"
-									className="w-full max-w-[200px] p-2 text-2xl rounded-md my-2 border-2 border-gray-400"
+									className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									inputMode="numeric"
 								/>
 							</div>
@@ -129,9 +172,28 @@ const Home: NextPage = () => {
 									type="number"
 									min="0"
 									placeholder="مسحوبات باسم"
-									className="w-full max-w-[200px] p-2 text-2xl rounded-md my-2 border-2 border-gray-400"
+									className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									inputMode="numeric"
 								/>
+							</div>
+							<ExpensesHandler
+								setValue={(name: any, value: any) =>
+									setValue(name, value)
+								}
+							/>
+							<div className="relative flex justify-between mb-5">
+								<p>
+									<span>إجمالي ايرادات اليوم</span>
+									<span className="font-bold px-5">
+										0 <sub>ج.م</sub>
+									</span>
+								</p>
+								<p>
+									<span>إجمالي مصروفات اليوم</span>
+									<span className="font-bold px-5">
+										0 <sub>ج.م</sub>
+									</span>
+								</p>
 							</div>
 							{watch("income") && watch("expenses") ? (
 								<p className="text-xl font-semibold text-center">
