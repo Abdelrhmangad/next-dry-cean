@@ -26,7 +26,12 @@ export default function ExpensesHandler({ setValue }: any) {
 			)
 		);
 	};
-	console.log("EXPENSES", expensesInputs);
+
+	const removeInput = (index: number) => {
+		setExpensesInputs(
+			expensesInputs.filter((item, inputIndex) => inputIndex !== index)
+		);
+	};
 	return (
 		<div className="border border-black p-4 my-5">
 			<div className="flex items-center justify-between">
@@ -77,6 +82,13 @@ export default function ExpensesHandler({ setValue }: any) {
 							className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 						/>
 					</div>
+					<button
+						type="button"
+						onClick={() => removeInput(index)}
+						className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-2 rounded focus:outline-none"
+					>
+						حذف
+					</button>
 				</div>
 			))}
 		</div>

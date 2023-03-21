@@ -18,10 +18,7 @@ const Home: NextPage = () => {
 	const [totalDayExpenses, setTotalDayExpenses] = useState(0);
 	function calculateDayTotalIncome() {
 		const total =
-			parseInt(watch("income") || 0) -
-			parseInt(watch("expenses") || 0) -
-			parseInt(watch("expensesBassem") || 0) -
-			parseInt(watch("expensesEl7ag") || 0);
+			parseInt(watch("iron_wash") || 0) + parseInt(watch("dye") || 0) + parseInt(watch("carpet_blanket_wash") || 0);
 		setTotalDayIncome(total);
 	}
 
@@ -37,9 +34,9 @@ const Home: NextPage = () => {
 		calculateDayTotalIncome();
 		calculateDayTotalExpenses();
 	}, [
-		watch("income"),
-		watch("expenses"),
-		watch("expensesBassem"),
+		watch("iron_wash"),
+		watch("dye"),
+		watch("carpet_blanket_wash"),
 		watch("expensesEl7ag")
 	]);
 
@@ -106,34 +103,43 @@ const Home: NextPage = () => {
 								</h3>
 								<div className="mx-5">
 									<label
-										htmlFor="dry-wash"
+										htmlFor="iron_wash"
 										className="text-lg"
 									>
 										غسيل ومكواه:
 									</label>
 									<input
-										id="dry-wash"
+										id="iron_wash"
 										name="dry-wash"
 										required
 										type="number"
 										min="0"
+										onChange={(e) =>
+											setValue(
+												"iron_wash",
+												e.target.value
+											)
+										}
 										placeholder="اجمالي ايرادات الغسيل والمكواه"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
 								</div>
 								<div className="mx-5">
 									<label
-										htmlFor="dry-wash"
+										htmlFor="dye"
 										className="text-lg"
 									>
 										صبغه:
 									</label>
 									<input
-										id="dry-wash"
-										name="dry-wash"
+										id="dye"
+										name="dye"
 										required
 										type="number"
 										min="0"
+										onChange={(e) =>
+											setValue("dye", e.target.value)
+										}
 										placeholder="اجمالي ايرادات الصبغة"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
@@ -151,6 +157,12 @@ const Home: NextPage = () => {
 										required
 										type="number"
 										min="0"
+										onChange={(e) =>
+											setValue(
+												"carpet_blanket_wash",
+												e.target.value
+											)
+										}
 										placeholder="اجمالي ايرادات غسيل السجاد والبطاطين"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
@@ -183,14 +195,14 @@ const Home: NextPage = () => {
 							/>
 							<div className="relative flex justify-between mb-5">
 								<p>
-									<span>إجمالي ايرادات اليوم</span>
-									<span className="font-bold px-5">
-										0 <sub>ج.م</sub>
+									<span>ايرادات اليوم</span>
+									<span className="font-bold px-5 text-xl">
+										{totalDayIncome} <sub>ج.م</sub>
 									</span>
 								</p>
 								<p>
-									<span>إجمالي مصروفات اليوم</span>
-									<span className="font-bold px-5">
+									<span>مصروفات اليوم</span>
+									<span className="font-bold px-5 text-xl">
 										0 <sub>ج.م</sub>
 									</span>
 								</p>
