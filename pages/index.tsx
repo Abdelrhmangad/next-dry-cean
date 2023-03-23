@@ -12,18 +12,27 @@ const Home: NextPage = () => {
 	const [todaysFormattedDate, setTodaysFormattedDate] = useState(
 		new Date().toISOString().slice(0, 10)
 	);
-	const { register, watch, setValue, handleSubmit } = useForm();
+	const { register, watch, setValue, handleSubmit, getValues } = useForm();
 	const [success, setSuccess] = useState(false);
 	const [totalDayIncome, setTotalDayIncome] = useState(0);
 	const [totalDayExpenses, setTotalDayExpenses] = useState(0);
 	function calculateDayTotalIncome() {
 		const total =
-			parseInt(watch("iron_wash") || 0) + parseInt(watch("dye") || 0) + parseInt(watch("carpet_blanket_wash") || 0);
+			parseInt(watch("iron_wash") || 0) +
+			parseInt(watch("dye") || 0) +
+			parseInt(watch("carpet_blanket_wash") || 0);
 		setTotalDayIncome(total);
 	}
-
+	console.log("totalDayExpenses", totalDayExpenses);
 	function calculateDayTotalExpenses() {
+		const { custom_inputs_expenses } = getValues();
+		let initVal = 0;
+		custom_inputs_expenses.map(
+			(eachInput: any) =>
+				(initVal = initVal + parseInt(eachInput.value || 0))
+		);
 		const total =
+			initVal +
 			parseInt(watch("expenses") || 0) +
 			parseInt(watch("expensesBassem") || 0) +
 			parseInt(watch("expensesEl7ag") || 0);
@@ -37,7 +46,9 @@ const Home: NextPage = () => {
 		watch("iron_wash"),
 		watch("dye"),
 		watch("carpet_blanket_wash"),
-		watch("expensesEl7ag")
+		watch("expensesEl7ag"),
+		watch("expensesBassem"),
+		watch("custom_inputs_expenses")
 	]);
 
 	// firebase
@@ -54,7 +65,8 @@ const Home: NextPage = () => {
 			...data,
 			created_at: new Date(),
 			total_day_income: totalDayIncome,
-			total_day_expenses: totalDayExpenses
+			total_day_expenses: totalDayExpenses,
+			total_cash: totalDayIncome - totalDayExpenses
 		});
 		setSuccess(true);
 	}
@@ -120,15 +132,13 @@ const Home: NextPage = () => {
 												e.target.value
 											)
 										}
+										inputMode="numeric"
 										placeholder="اجمالي ايرادات الغسيل والمكواه"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
 								</div>
 								<div className="mx-5">
-									<label
-										htmlFor="dye"
-										className="text-lg"
-									>
+									<label htmlFor="dye" className="text-lg">
 										صبغه:
 									</label>
 									<input
@@ -140,6 +150,7 @@ const Home: NextPage = () => {
 										onChange={(e) =>
 											setValue("dye", e.target.value)
 										}
+										inputMode="numeric"
 										placeholder="اجمالي ايرادات الصبغة"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
@@ -163,15 +174,20 @@ const Home: NextPage = () => {
 												e.target.value
 											)
 										}
+										inputMode="numeric"
 										placeholder="اجمالي ايرادات غسيل السجاد والبطاطين"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
 								</div>
 							</div>
 							<div className="relative">
+								<label htmlFor="el7ag" className="text-lg">
+									مسحوبات الحج محمد
+								</label>
 								<input
 									{...register("expensesEl7ag")}
 									type="number"
+									id="el7ag"
 									min="0"
 									placeholder="مسحوبات الحج محمد"
 									className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
@@ -179,6 +195,9 @@ const Home: NextPage = () => {
 								/>
 							</div>
 							<div className="relative">
+								<label htmlFor="el7ag" className="text-lg">
+									مسحوبات باسم
+								</label>
 								<input
 									{...register("expensesBassem")}
 									type="number"
@@ -203,13 +222,15 @@ const Home: NextPage = () => {
 								<p>
 									<span>مصروفات اليوم</span>
 									<span className="font-bold px-5 text-xl">
-										0 <sub>ج.م</sub>
+										{totalDayExpenses} <sub>ج.م</sub>
 									</span>
 								</p>
 							</div>
-							{watch("income") && watch("expenses") ? (
+							{totalDayExpenses && totalDayIncome ? (
 								<p className="text-xl font-semibold text-center">
-									الإجمالي: {totalDayIncome}
+									اجمالي النقدي:{" "}
+									{totalDayIncome - totalDayExpenses}{" "}
+									<sub>ج.م</sub>
 								</p>
 							) : null}
 							{success ? (

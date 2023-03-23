@@ -28,7 +28,7 @@ export default function Dashboard() {
 				setSelectedMonthDays(monthData);
 			});
 		})();
-	}, [dbInstance]);
+	}, [currentFetchingMonth]);
 
 	useEffect(() => {
 		monthMethods.totalMonthIncome();

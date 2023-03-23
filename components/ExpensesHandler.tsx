@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function ExpensesHandler({ setValue }: any) {
 	const [expensesInputs, setExpensesInputs] = useState<
@@ -32,6 +32,13 @@ export default function ExpensesHandler({ setValue }: any) {
 			expensesInputs.filter((item, inputIndex) => inputIndex !== index)
 		);
 	};
+
+	
+	useEffect(() => {
+	  setValue('custom_inputs_expenses', expensesInputs)
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [expensesInputs])
+
 	return (
 		<div className="border border-black p-4 my-5">
 			<div className="flex items-center justify-between">
@@ -52,7 +59,7 @@ export default function ExpensesHandler({ setValue }: any) {
 				>
 					<div className="flex flex-col gap-1 mb-3">
 						<label htmlFor={`label-for-${index}`}>
-							اسم المصروفات
+							نوع المصروفات
 						</label>
 						<input
 							id={`label-for-${index}`}
