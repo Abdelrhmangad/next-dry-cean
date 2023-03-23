@@ -7,7 +7,6 @@ import Head from "next/head";
 
 export default function Dashboard() {
 	const [selectedMonthDays, setSelectedMonthDays] = useState([]);
-	const [currentMonth, setCurrentMonth] = useState(getCurrentMonth() || "");
 	const [allMonthIncome, setAllMonthIncome] = useState<number>(0);
 	const [allMonthExpenses, setAllMonthExpenses] = useState<number>(0);
 	const [totalEl7agExpenses, setTotalEl7agExpenses] = useState<number>(0);
@@ -18,9 +17,12 @@ export default function Dashboard() {
 	const [currentFetchingMonth, setCurrentFetchingMonth] = useState(
 		format(new Date(), "MM-yyyy")
 	);
+	const [currentMonth, setCurrentMonth] = useState("");
+
 	const dbInstance = collection(database, `${currentFetchingMonth}`);
 	useEffect(() => {
 		(async function () {
+			getCurrentMonth();
 			await getDocs(dbInstance).then((data) => {
 				const monthData: any = data.docs.map((item) => {
 					return { ...item.data(), id: item.id };
@@ -42,7 +44,7 @@ export default function Dashboard() {
 	const monthMethods = {
 		allMonthExpenses() {
 			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.expenses),
+				(acc, eachDay: any) => acc + parseInt(eachDay.total_day_expenses),
 				0
 			);
 			setAllMonthExpenses(sum);
@@ -50,7 +52,7 @@ export default function Dashboard() {
 		},
 		allMonthIncome() {
 			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.income),
+				(acc, eachDay: any) => acc + parseInt(eachDay.total_day_income),
 				0
 			);
 			setAllMonthIncome(sum);
@@ -74,7 +76,7 @@ export default function Dashboard() {
 		},
 		totalMonthIncome() {
 			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.total_day_income),
+				(acc, eachDay: any) => acc + parseInt(eachDay.total_cash),
 				0
 			);
 			setTotalMonthIncome(sum);
@@ -99,6 +101,50 @@ export default function Dashboard() {
 	function formatInputMonthVal() {
 		const [month, year] = currentFetchingMonth.split("-");
 		return `${year}-${month}`;
+	}
+
+	function getCurrentMonth() {
+		const [month, year] = currentFetchingMonth.split("-");
+		var months = [
+			"يناير",
+			"فبراير",
+			"مارس",
+			"إبريل",
+			"مايو",
+			"يونيو",
+			"يوليو",
+			"أغسطس",
+			"سبتمبر",
+			"أكتوبر",
+			"نوفمبر",
+			"ديسمبر"
+		];
+		if (month.split("0").length > 1) {
+			const monthNumber = (month.split("0")[1] as any) - 1;
+			const currentMonth = months[parseInt(monthNumber as any)];
+			setCurrentMonth(currentMonth + ", " + year);
+			return currentMonth + ", " + year;
+		} else {
+			const monthNumber = (month.split("0")[0] as any) - 1;
+			const currentMonth = months[parseInt(monthNumber as any)];
+			setCurrentMonth(currentMonth + ", " + year);
+			return currentMonth + ", " + year;
+		}
+	}
+
+	function getDayString(date: string) {
+		const newDate = new Date(date);
+		var days = [
+			"اﻷحد",
+			"اﻷثنين",
+			"الثلاثاء",
+			"اﻷربعاء",
+			"الخميس",
+			"الجمعة",
+			"السبت"
+		];
+		// var delDateString = days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ', ' + date.getFullYear();
+		return `${days[newDate.getDay()]}`;
 	}
 	return (
 		<>
@@ -148,13 +194,21 @@ export default function Dashboard() {
 									{selectedMonthDays.map(
 										(eachDay: any, index) => (
 											<tr key={index}>
-												<td>{eachDay.date}</td>
+												<td className="flex flex-col">
+													<span>{eachDay.date}</span>
+													<span>
+														{getDayString(
+															eachDay.date
+														)}
+													</span>
+												</td>
 												<td>
-													{eachDay.income}{" "}
+												{console.log("eachDAYYYYY", eachDay)}
+													{eachDay.total_day_income}
 													<sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.expenses}{" "}
+													{eachDay.total_day_expenses}{" "}
 													<sub>ج.م</sub>
 												</td>
 												<td>
@@ -170,7 +224,7 @@ export default function Dashboard() {
 													<sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.total_day_income}{" "}
+													{eachDay.total_cash}{" "}
 													<sub>ج.م</sub>
 												</td>
 											</tr>
@@ -216,34 +270,4 @@ export default function Dashboard() {
 			</div>
 		</>
 	);
-}
-
-function getCurrentMonth() {
-	const date = new Date();
-	var months = [
-		"يناير",
-		"فبراير",
-		"مارس",
-		"إبريل",
-		"مايو",
-		"يونيو",
-		"يوليو",
-		"أغسطس",
-		"سبتمبر",
-		"أكتوبر",
-		"نوفمبر",
-		"ديسمبر"
-	];
-	var days = [
-		"اﻷحد",
-		"اﻷثنين",
-		"الثلاثاء",
-		"اﻷربعاء",
-		"الخميس",
-		"الجمعة",
-		"السبت"
-	];
-	// var delDateString = days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ', ' + date.getFullYear();
-	const currentMonth = months[date.getMonth()];
-	return currentMonth + ", " + date.getFullYear();
 }

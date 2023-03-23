@@ -31,6 +31,7 @@ const Home: NextPage = () => {
 			(eachInput: any) =>
 				(initVal = initVal + parseInt(eachInput.value || 0))
 		);
+		setValue("custom_expenses", initVal);
 		const total =
 			initVal +
 			parseInt(watch("expenses") || 0) +
@@ -56,8 +57,6 @@ const Home: NextPage = () => {
 		format(new Date(), "MM-yyyy")
 	);
 	function submitDayData(data: any) {
-		data.expenses = data.expenses ? data.expenses : 0;
-		data.income = data.income ? data.income : 0;
 		data.expensesEl7ag = data.expensesEl7ag ? data.expensesEl7ag : 0;
 		data.expensesBassem = data.expensesBassem ? data.expensesBassem : 0;
 
@@ -69,6 +68,9 @@ const Home: NextPage = () => {
 			total_cash: totalDayIncome - totalDayExpenses
 		});
 		setSuccess(true);
+		setTimeout(() => {
+			window.location.reload();
+		}, 3000);
 	}
 
 	return (
@@ -129,7 +131,7 @@ const Home: NextPage = () => {
 										onChange={(e) =>
 											setValue(
 												"iron_wash",
-												e.target.value
+												parseInt(e.target.value)
 											)
 										}
 										inputMode="numeric"
@@ -148,7 +150,10 @@ const Home: NextPage = () => {
 										type="number"
 										min="0"
 										onChange={(e) =>
-											setValue("dye", e.target.value)
+											setValue(
+												"dye",
+												parseInt(e.target.value)
+											)
 										}
 										inputMode="numeric"
 										placeholder="اجمالي ايرادات الصبغة"
@@ -171,7 +176,7 @@ const Home: NextPage = () => {
 										onChange={(e) =>
 											setValue(
 												"carpet_blanket_wash",
-												e.target.value
+												parseInt(e.target.value)
 											)
 										}
 										inputMode="numeric"
