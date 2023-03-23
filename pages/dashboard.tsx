@@ -91,12 +91,39 @@ export default function Dashboard() {
 		}
 	};
 
+	function formatInputSelectedMonth(selectedMonth: string) {
+		const [year, month] = selectedMonth.split("-");
+		setCurrentFetchingMonth(`${month}-${year}`);
+	}
+
+	function formatInputMonthVal() {
+		const [month, year] = currentFetchingMonth.split("-");
+		return `${year}-${month}`;
+	}
 	return (
 		<>
 			<Head>
 				<title>دراي كلين الجامعة</title>
 			</Head>
 			<div>
+				<header className="relative">
+					<label htmlFor="start" className="font-bold text-lg mb-2">
+						الشهر:
+					</label>
+					<input
+						className="w-full max-w-[200px] p-2 text-xl rounded-md mt-2 border-2 border-gray-400"
+						type="month"
+						id="start"
+						name="start"
+						min={`2023-03`}
+						max={`${format(new Date(), "yyyy-12")}`}
+						value={formatInputMonthVal()}
+						onChange={(e) => {
+							formatInputSelectedMonth(e.target.value);
+							console.log("target value", e.target.value);
+						}}
+					></input>
+				</header>
 				<main>
 					<div className="container dashboard-container">
 						<div className="dashboard-header">
