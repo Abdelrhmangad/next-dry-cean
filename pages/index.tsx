@@ -73,6 +73,21 @@ const Home: NextPage = () => {
 		}, 3000);
 	}
 
+	function getDayString(date: string) {
+		const newDate = new Date(date);
+		var days = [
+			"اﻷحد",
+			"اﻷثنين",
+			"الثلاثاء",
+			"اﻷربعاء",
+			"الخميس",
+			"الجمعة",
+			"السبت"
+		];
+		// var delDateString = days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ', ' + date.getFullYear();
+		return `${days[newDate.getDay()]}`;
+	}
+
 	return (
 		<>
 			<Head>
@@ -85,9 +100,12 @@ const Home: NextPage = () => {
 						className="w-full mt-5 bg-gray-200 py-7 rounded-md my-5 px-8"
 						onSubmit={handleSubmit(submitDayData)}
 					>
-						<h1 className="text-center text-2xl text-blue-700 underline mb-5">
-							تسجيل ايراد يوم {todaysFormattedDate}!
-						</h1>
+						<p className="text-center text-2xl text-blue-700 mb-5">
+							<span className="text-center text-2xl text-blue-700 underline mb-5">
+								تسجيل ايراد يوم {todaysFormattedDate}!
+							</span>
+							<p>يوم {getDayString(todaysFormattedDate)}</p>
+						</p>
 						<div className="relative">
 							<label
 								htmlFor="date"
