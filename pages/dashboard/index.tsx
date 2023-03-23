@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { format } from "date-fns";
-import { database } from "../lib/firebaseConfig";
+import { database } from "../../lib/firebaseConfig";
 import Head from "next/head";
+import Link from "next/link";
 
 export default function Dashboard() {
 	const [selectedMonthDays, setSelectedMonthDays] = useState([]);
@@ -44,7 +45,8 @@ export default function Dashboard() {
 	const monthMethods = {
 		allMonthExpenses() {
 			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.total_day_expenses),
+				(acc, eachDay: any) =>
+					acc + parseInt(eachDay.total_day_expenses),
 				0
 			);
 			setAllMonthExpenses(sum);
@@ -178,7 +180,7 @@ export default function Dashboard() {
 							</h1>
 						</div>
 						<div className="applications-table overflow-x-auto">
-							<table id="table">
+							<table id="table" className="table-auto">
 								<thead>
 									<tr className="text-xl">
 										<th>تاريخ اليوم</th>
@@ -188,14 +190,15 @@ export default function Dashboard() {
 										<th>مسحوبات باسم</th>
 										<th>صافي مصروفات اليوم</th>
 										<th>صافي ايرادات اليوم</th>
+										<th></th>
 									</tr>
 								</thead>
 								<tbody>
 									{selectedMonthDays.map(
 										(eachDay: any, index) => (
 											<tr key={index}>
-												<td className="flex flex-col">
-													<span>{eachDay.date}</span>
+												<td>
+													<p>{eachDay.date}</p>
 													<span>
 														{getDayString(
 															eachDay.date
@@ -203,7 +206,6 @@ export default function Dashboard() {
 													</span>
 												</td>
 												<td>
-												{console.log("eachDAYYYYY", eachDay)}
 													{eachDay.total_day_income}
 													<sub>ج.م</sub>
 												</td>
@@ -227,6 +229,13 @@ export default function Dashboard() {
 													{eachDay.total_cash}{" "}
 													<sub>ج.م</sub>
 												</td>
+												<td className="underline">
+													<Link
+														href={`/dashboard/${eachDay.id}`}
+													>
+														أضغط للمزيد
+													</Link>
+												</td>
 											</tr>
 										)
 									)}
@@ -240,6 +249,7 @@ export default function Dashboard() {
 									<td>اجمالي مسحويات باسم</td>
 									<td>صافي مصروفات الشهر</td>
 									<td>صافي ايرادات الشهر</td>
+									<td></td>
 								</tr>
 								<tr className="secondBody">
 									<td>{currentMonth}</td>
@@ -262,6 +272,7 @@ export default function Dashboard() {
 									<td>
 										{totalMonthIncome} <sub>ج.م</sub>
 									</td>
+									<td></td>
 								</tr>
 							</table>
 						</div>
