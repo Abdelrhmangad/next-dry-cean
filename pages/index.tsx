@@ -138,7 +138,7 @@ const Home: NextPage = () => {
 										htmlFor="iron_wash"
 										className="text-lg"
 									>
-										غسيل ومكواه:
+										الإيراد الكلي:
 									</label>
 									<input
 										id="iron_wash"
@@ -153,11 +153,11 @@ const Home: NextPage = () => {
 											)
 										}
 										inputMode="numeric"
-										placeholder="اجمالي ايرادات الغسيل والمكواه"
+										placeholder="اجمالي ايرادات اليوم"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
 								</div>
-								<div className="mx-5">
+								{/* <div className="mx-5">
 									<label htmlFor="dye" className="text-lg">
 										صبغه:
 									</label>
@@ -201,7 +201,7 @@ const Home: NextPage = () => {
 										placeholder="اجمالي ايرادات غسيل السجاد والبطاطين"
 										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
 									/>
-								</div>
+								</div> */}
 							</div>
 							<div className="relative">
 								<label htmlFor="el7ag" className="text-lg">
