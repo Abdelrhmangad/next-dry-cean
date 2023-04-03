@@ -70,7 +70,7 @@ const Home: NextPage = () => {
 		setSuccess(true);
 		setTimeout(() => {
 			window.location.reload();
-		}, 3000);
+		}, 1000);
 	}
 
 	function getDayString(date: string) {
@@ -124,6 +124,7 @@ const Home: NextPage = () => {
 								onChange={(e) => {
 									setValue("date", e.target.value);
 									setTodaysFormattedDate(e.target.value);
+									setCurrentFetchingMonth(format(new Date(e.target.value), "MM-yyyy"))
 								}}
 							/>
 						</div>
