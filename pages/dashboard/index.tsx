@@ -173,13 +173,13 @@ export default function Dashboard() {
 					></input>
 				</header>
 				<main>
-					<div className="container dashboard-container">
+					<div className="container dashboard-container overflow-x-scroll">
 						<div className="dashboard-header">
 							<h1 className="text-center text-xl w-full py-5 font-bold">
 								ايرادات شهر {currentMonth}
 							</h1>
 						</div>
-						<div className="applications-table overflow-x-auto">
+						<div className="applications-table">
 							<table id="table" className="table-auto">
 								<thead>
 									<tr className="text-xl">
