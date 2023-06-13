@@ -1,137 +1,76 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { format } from "date-fns";
-import { database } from "../../lib/firebaseConfig";
+import type { NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { database } from "../../lib/firebaseConfig";
+import { setDoc, doc } from "firebase/firestore";
+import { format } from "date-fns";
+import ExpensesHandler from "../../components/ExpensesHandler";
 
-export default function Dashboard() {
-	const [selectedMonthDays, setSelectedMonthDays] = useState([]);
-	const [allMonthIncome, setAllMonthIncome] = useState<number>(0);
-	const [allMonthExpenses, setAllMonthExpenses] = useState<number>(0);
-	const [totalEl7agExpenses, setTotalEl7agExpenses] = useState<number>(0);
-	const [totalBassemExpenses, setTotalBassemExpenses] = useState<number>(0);
-	const [totalMonthIncome, setTotalMonthIncome] = useState<number>(0);
-	const [totalMonthExpenses, setTotalMonthExpenses] = useState<number>(0);
+const Home: NextPage = () => {
+	const [todaysFormattedDate, setTodaysFormattedDate] = useState(
+		new Date().toISOString().slice(0, 10)
+	);
+	const { register, watch, setValue, handleSubmit, getValues } = useForm();
+	const [success, setSuccess] = useState(false);
+	const [totalDayIncome, setTotalDayIncome] = useState(0);
+	const [totalDayExpenses, setTotalDayExpenses] = useState(0);
+	function calculateDayTotalIncome() {
+		const total =
+			parseInt(watch("iron_wash") || 0) +
+			parseInt(watch("dye") || 0) +
+			parseInt(watch("carpet_blanket_wash") || 0);
+		setTotalDayIncome(total);
+	}
+	console.log("totalDayExpenses", totalDayExpenses);
+	function calculateDayTotalExpenses() {
+		const { custom_inputs_expenses } = getValues();
+		let initVal = 0;
+		custom_inputs_expenses.map(
+			(eachInput: any) =>
+				(initVal = initVal + parseInt(eachInput.value || 0))
+		);
+		setValue("custom_expenses", initVal);
+		const total =
+			initVal +
+			parseInt(watch("expenses") || 0) +
+			parseInt(watch("expensesBassem") || 0) +
+			parseInt(watch("expensesEl7ag") || 0);
+		setTotalDayExpenses(total);
+	}
 
+	useEffect(() => {
+		calculateDayTotalIncome();
+		calculateDayTotalExpenses();
+	}, [
+		watch("iron_wash"),
+		watch("dye"),
+		watch("carpet_blanket_wash"),
+		watch("expensesEl7ag"),
+		watch("expensesBassem"),
+		watch("custom_inputs_expenses")
+	]);
+
+	// firebase
 	const [currentFetchingMonth, setCurrentFetchingMonth] = useState(
 		format(new Date(), "MM-yyyy")
 	);
-	const [currentMonth, setCurrentMonth] = useState("");
+	function submitDayData(data: any) {
+		data.expensesEl7ag = data.expensesEl7ag ? data.expensesEl7ag : 0;
+		data.expensesBassem = data.expensesBassem ? data.expensesBassem : 0;
 
-	const dbInstance = collection(database, `${currentFetchingMonth}`);
-	useEffect(() => {
-		(async function () {
-			getCurrentMonth();
-			await getDocs(dbInstance).then((data) => {
-				const monthData: any = data.docs.map((item) => {
-					return { ...item.data(), id: item.id };
-				});
-				setSelectedMonthDays(monthData);
-			});
-		})();
-	}, [currentFetchingMonth]);
-
-	useEffect(() => {
-		monthMethods.totalMonthIncome();
-		monthMethods.allMonthExpenses();
-		monthMethods.allMonthIncome();
-		monthMethods.totalEl7agExpenses();
-		monthMethods.totalBassemExpenses();
-		monthMethods.totalMonthExpenses();
-	}, [selectedMonthDays]);
-
-	const monthMethods = {
-		allMonthExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) =>
-					acc + parseInt(eachDay.total_day_expenses),
-				0
-			);
-			setAllMonthExpenses(sum);
-			return sum;
-		},
-		allMonthIncome() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.total_day_income),
-				0
-			);
-			setAllMonthIncome(sum);
-			return sum;
-		},
-		totalEl7agExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.expensesEl7ag),
-				0
-			);
-			setTotalEl7agExpenses(sum);
-			return sum;
-		},
-		totalBassemExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.expensesBassem),
-				0
-			);
-			setTotalBassemExpenses(sum);
-			return sum;
-		},
-		totalMonthIncome() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.total_cash),
-				0
-			);
-			setTotalMonthIncome(sum);
-			return sum;
-		},
-		totalMonthExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) =>
-					acc + parseInt(eachDay.total_day_expenses),
-				0
-			);
-			setTotalMonthExpenses(sum);
-			return sum;
-		}
-	};
-
-	function formatInputSelectedMonth(selectedMonth: string) {
-		const [year, month] = selectedMonth.split("-");
-		setCurrentFetchingMonth(`${month}-${year}`);
-	}
-
-	function formatInputMonthVal() {
-		const [month, year] = currentFetchingMonth.split("-");
-		return `${year}-${month}`;
-	}
-
-	function getCurrentMonth() {
-		const [month, year] = currentFetchingMonth.split("-");
-		var months = [
-			"يناير",
-			"فبراير",
-			"مارس",
-			"إبريل",
-			"مايو",
-			"يونيو",
-			"يوليو",
-			"أغسطس",
-			"سبتمبر",
-			"أكتوبر",
-			"نوفمبر",
-			"ديسمبر"
-		];
-		if (month.split("0").length > 1) {
-			const monthNumber = (month.split("0")[1] as any) - 1;
-			const currentMonth = months[parseInt(monthNumber as any)];
-			setCurrentMonth(currentMonth + ", " + year);
-			return currentMonth + ", " + year;
-		} else {
-			const monthNumber = (month.split("0")[0] as any) - 1;
-			const currentMonth = months[parseInt(monthNumber as any)];
-			setCurrentMonth(currentMonth + ", " + year);
-			return currentMonth + ", " + year;
-		}
+		setDoc(doc(database, currentFetchingMonth, data.date), {
+			...data,
+			created_at: new Date(),
+			total_day_income: totalDayIncome,
+			total_day_expenses: totalDayExpenses,
+			total_cash: totalDayIncome - totalDayExpenses
+		});
+		setSuccess(true);
+		setTimeout(() => {
+			window.location.reload();
+		}, 1000);
 	}
 
 	function getDayString(date: string) {
@@ -148,137 +87,191 @@ export default function Dashboard() {
 		// var delDateString = days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ', ' + date.getFullYear();
 		return `${days[newDate.getDay()]}`;
 	}
+
 	return (
 		<>
 			<Head>
 				<title>دراي كلين الجامعة</title>
 			</Head>
-			<div>
-				<header className="relative">
-					<label htmlFor="start" className="font-bold text-lg mb-2">
-						الشهر:
-					</label>
-					<input
-						className="w-full max-w-[200px] p-2 text-xl rounded-md mt-2 border-2 border-gray-400"
-						type="month"
-						id="start"
-						name="start"
-						min={`2023-03`}
-						max={`${format(new Date(), "yyyy-12")}`}
-						value={formatInputMonthVal()}
-						onChange={(e) => {
-							formatInputSelectedMonth(e.target.value);
-							console.log("target value", e.target.value);
-						}}
-					></input>
-				</header>
-				<main>
-					<div className="container dashboard-container overflow-x-scroll">
-						<div className="dashboard-header">
-							<h1 className="text-center text-xl w-full py-5 font-bold">
-								ايرادات شهر {currentMonth}
-							</h1>
+
+			<main>
+				<div className="container singlepage-container flex justify-content-center">
+					<form
+						className="w-full mt-5 bg-gray-200 py-7 rounded-md my-5 px-8"
+						onSubmit={handleSubmit(submitDayData)}
+					>
+						<p className="text-center text-2xl text-blue-700 mb-5">
+							<span className="text-center text-2xl text-blue-700 underline mb-5">
+								تسجيل ايراد يوم {todaysFormattedDate}!
+							</span>
+							<p>يوم {getDayString(todaysFormattedDate)}</p>
+						</p>
+						<div className="relative">
+							<label
+								htmlFor="date"
+								className="font-bold text-lg mb-2"
+							>
+								اليوم
+							</label>
+							<input
+								{...register("date")}
+								value={`${todaysFormattedDate}`}
+								required
+								id="date"
+								type="date"
+								className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400 mb-5"
+								placeholder="التاريخ"
+								onChange={(e) => {
+									setValue("date", e.target.value);
+									setTodaysFormattedDate(e.target.value);
+									setCurrentFetchingMonth(format(new Date(e.target.value), "MM-yyyy"))
+								}}
+							/>
 						</div>
-						<div className="applications-table">
-							<table id="table" className="table-auto">
-								<thead>
-									<tr className="text-xl">
-										<th>تاريخ اليوم</th>
-										<th>الايراد الكلي</th>
-										<th>المصروفات الكليه</th>
-										<th>مسحوبات الحج محمد</th>
-										<th>مسحوبات باسم</th>
-										<th>صافي مصروفات اليوم</th>
-										<th>صافي ايرادات اليوم</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									{selectedMonthDays.map(
-										(eachDay: any, index) => (
-											<tr key={index}>
-												<td>
-													<p>{eachDay.date}</p>
-													<span>
-														{getDayString(
-															eachDay.date
-														)}
-													</span>
-												</td>
-												<td>
-													{eachDay.total_day_income}
-													<sub>ج.م</sub>
-												</td>
-												<td>
-													{eachDay.total_day_expenses}{" "}
-													<sub>ج.م</sub>
-												</td>
-												<td>
-													{eachDay.expensesEl7ag}{" "}
-													<sub>ج.م</sub>
-												</td>
-												<td>
-													{eachDay.expensesBassem}{" "}
-													<sub>ج.م</sub>
-												</td>
-												<td>
-													{eachDay.total_day_expenses}{" "}
-													<sub>ج.م</sub>
-												</td>
-												<td>
-													{eachDay.total_cash}{" "}
-													<sub>ج.م</sub>
-												</td>
-												<td className="underline">
-													<Link
-														href={`/dashboard/${eachDay.id}`}
-													>
-														أضغط للمزيد
-													</Link>
-												</td>
-											</tr>
-										)
-									)}
-								</tbody>
-								<br />
-								<tr className="secondHead">
-									<td>شهر</td>
-									<td>إجمــالي ايرادات الشهر</td>
-									<td>إجمــالي المصروفات</td>
-									<td>اجمالي مسحويات الحاج</td>
-									<td>اجمالي مسحويات باسم</td>
-									<td>صافي مصروفات الشهر</td>
-									<td>صافي ايرادات الشهر</td>
-									<td></td>
-								</tr>
-								<tr className="secondBody">
-									<td>{currentMonth}</td>
-									<td>
-										{allMonthIncome} <sub>ج.م</sub>
-									</td>
-									<td>
-										{allMonthExpenses}
-										<sub>ج.م</sub>
-									</td>
-									<td>
-										{totalEl7agExpenses} <sub>ج.م</sub>
-									</td>
-									<td>
-										{totalBassemExpenses} <sub>ج.م</sub>
-									</td>
-									<td>
-										{totalMonthExpenses} <sub>ج.م</sub>
-									</td>
-									<td>
-										{totalMonthIncome} <sub>ج.م</sub>
-									</td>
-									<td></td>
-								</tr>
-							</table>
+
+						<div className="inputs-container flex flex-col w-full">
+							<div className="border border-black p-4 mb-5">
+								<h3 className="font-bold text-lg mb-2">
+									تفاصيل الإيراد:
+								</h3>
+								<div className="mx-5">
+									<label
+										htmlFor="iron_wash"
+										className="text-lg"
+									>
+										الإيراد الكلي:
+									</label>
+									<input
+										id="iron_wash"
+										name="dry-wash"
+										required
+										type="number"
+										min="0"
+										onChange={(e) =>
+											setValue(
+												"iron_wash",
+												parseInt(e.target.value)
+											)
+										}
+										inputMode="numeric"
+										placeholder="اجمالي ايرادات اليوم"
+										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									/>
+								</div>
+								{/* <div className="mx-5">
+									<label htmlFor="dye" className="text-lg">
+										صبغه:
+									</label>
+									<input
+										id="dye"
+										name="dye"
+										required
+										type="number"
+										min="0"
+										onChange={(e) =>
+											setValue(
+												"dye",
+												parseInt(e.target.value)
+											)
+										}
+										inputMode="numeric"
+										placeholder="اجمالي ايرادات الصبغة"
+										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									/>
+								</div>
+								<div className="mx-5">
+									<label
+										htmlFor="dry-wash"
+										className="text-lg"
+									>
+										غسيل سجاد وبطاطين:
+									</label>
+									<input
+										id="dry-wash"
+										name="dry-wash"
+										required
+										type="number"
+										min="0"
+										onChange={(e) =>
+											setValue(
+												"carpet_blanket_wash",
+												parseInt(e.target.value)
+											)
+										}
+										inputMode="numeric"
+										placeholder="اجمالي ايرادات غسيل السجاد والبطاطين"
+										className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									/>
+								</div> */}
+							</div>
+							<div className="relative">
+								<label htmlFor="el7ag" className="text-lg">
+									مسحوبات الحج محمد
+								</label>
+								<input
+									{...register("expensesEl7ag")}
+									type="number"
+									id="el7ag"
+									min="0"
+									placeholder="مسحوبات الحج محمد"
+									className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									inputMode="numeric"
+								/>
+							</div>
+							<div className="relative">
+								<label htmlFor="el7ag" className="text-lg">
+									مسحوبات باسم
+								</label>
+								<input
+									{...register("expensesBassem")}
+									type="number"
+									min="0"
+									placeholder="مسحوبات باسم"
+									className="w-full max-w-[200px] p-2 text-xl rounded-md my-2 border-2 border-gray-400"
+									inputMode="numeric"
+								/>
+							</div>
+							<ExpensesHandler
+								setValue={(name: any, value: any) =>
+									setValue(name, value)
+								}
+							/>
+							<div className="relative flex justify-between mb-5">
+								<p>
+									<span>ايرادات اليوم</span>
+									<span className="font-bold px-5 text-xl">
+										{totalDayIncome} <sub>ج.م</sub>
+									</span>
+								</p>
+								<p>
+									<span>مصروفات اليوم</span>
+									<span className="font-bold px-5 text-xl">
+										{totalDayExpenses} <sub>ج.م</sub>
+									</span>
+								</p>
+							</div>
+							{totalDayExpenses && totalDayIncome ? (
+								<p className="text-xl font-semibold text-center">
+									اجمالي النقدي:{" "}
+									{totalDayIncome - totalDayExpenses}{" "}
+									<sub>ج.م</sub>
+								</p>
+							) : null}
+							{success ? (
+								<p className="text-green-500 text-xl text-center py-4">
+									تم إضافة البيانات بنجاح
+								</p>
+							) : (
+								<button className="py-4 px-10 focus:bg-blue-400 bg-blue-600 self-center text-center text-white font-black rounded-md my-4">
+									حفظ البيانات
+								</button>
+							)}
 						</div>
-					</div>
-				</main>
-			</div>
+					</form>
+				</div>
+			</main>
 		</>
 	);
-}
+};
+
+export default Home;
