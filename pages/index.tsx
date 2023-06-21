@@ -16,9 +16,7 @@ export default function Dashboard() {
 	const [totalBassemExpenses, setTotalBassemExpenses] = useState<number>(0);
 	const [totalMonthIncome, setTotalMonthIncome] = useState<number>(0);
 	const [totalMonthExpenses, setTotalMonthExpenses] = useState<number>(0);
-	const [currentFetchingMonth, setCurrentFetchingMonth] = useState(
-		format(new Date(), "MM-yyyy")
-	);
+	const [currentFetchingMonth, setCurrentFetchingMonth] = useState(format(new Date(), "MM-yyyy"));
 	const [currentMonth, setCurrentMonth] = useState("");
 
 	const dbInstance = collection(database, `${currentFetchingMonth}`);
@@ -45,52 +43,32 @@ export default function Dashboard() {
 
 	const monthMethods = {
 		allMonthExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) =>
-					acc + parseInt(eachDay.total_day_expenses),
-				0
-			);
+			const sum = selectedMonthDays.reduce((acc, eachDay: any) => acc + parseInt(eachDay.total_day_expenses), 0);
 			setAllMonthExpenses(sum);
 			return sum;
 		},
 		allMonthIncome() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.total_day_income),
-				0
-			);
+			const sum = selectedMonthDays.reduce((acc, eachDay: any) => acc + parseInt(eachDay.total_day_income), 0);
 			setAllMonthIncome(sum);
 			return sum;
 		},
 		totalEl7agExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.expensesEl7ag),
-				0
-			);
+			const sum = selectedMonthDays.reduce((acc, eachDay: any) => acc + parseInt(eachDay.expensesEl7ag), 0);
 			setTotalEl7agExpenses(sum);
 			return sum;
 		},
 		totalBassemExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.expensesBassem),
-				0
-			);
+			const sum = selectedMonthDays.reduce((acc, eachDay: any) => acc + parseInt(eachDay.expensesBassem), 0);
 			setTotalBassemExpenses(sum);
 			return sum;
 		},
 		totalMonthIncome() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) => acc + parseInt(eachDay.total_cash),
-				0
-			);
+			const sum = selectedMonthDays.reduce((acc, eachDay: any) => acc + parseInt(eachDay.total_cash), 0);
 			setTotalMonthIncome(sum);
 			return sum;
 		},
 		totalMonthExpenses() {
-			const sum = selectedMonthDays.reduce(
-				(acc, eachDay: any) =>
-					acc + parseInt(eachDay.total_day_expenses),
-				0
-			);
+			const sum = selectedMonthDays.reduce((acc, eachDay: any) => acc + parseInt(eachDay.total_day_expenses), 0);
 			setTotalMonthExpenses(sum);
 			return sum;
 		}
@@ -137,15 +115,7 @@ export default function Dashboard() {
 
 	function getDayString(date: string) {
 		const newDate = new Date(date);
-		var days = [
-			"اﻷحد",
-			"اﻷثنين",
-			"الثلاثاء",
-			"اﻷربعاء",
-			"الخميس",
-			"الجمعة",
-			"السبت"
-		];
+		var days = ["اﻷحد", "اﻷثنين", "الثلاثاء", "اﻷربعاء", "الخميس", "الجمعة", "السبت"];
 		// var delDateString = days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ', ' + date.getFullYear();
 		return `${days[newDate.getDay()]}`;
 	}
@@ -159,10 +129,13 @@ export default function Dashboard() {
 		const [month, year]: any = currentFetchingMonth.split("-");
 		const date = new Date(year, month); // June 2023
 		const daysInMonth = getDaysInMonth(date);
-		setCombinedArr([
-			...selectedMonthDays,
-			...(Array(daysInMonth - selectedMonthDays.length).fill(0) as [])
-		]);
+		const fullMonthDays: any = Array(daysInMonth).fill(0);
+		selectedMonthDays.map((eachAddedDay: { date: string }) => {
+			const dateParts = eachAddedDay.date.split("-");
+			const day = parseInt(dateParts[2]);
+			fullMonthDays[day - 1] = eachAddedDay;
+		});
+		setCombinedArr(fullMonthDays);
 	}
 
 	function getDateOfMonth(day: any) {
@@ -197,9 +170,7 @@ export default function Dashboard() {
 				<main>
 					<div className="dashboard-container overflow-x-scroll">
 						<div className="dashboard-header">
-							<h1 className="text-center text-xl w-full py-5 font-bold">
-								ايرادات شهر {currentMonth}
-							</h1>
+							<h1 className="text-center text-xl w-full py-5 font-bold">ايرادات شهر {currentMonth}</h1>
 						</div>
 						<div className="applications-table">
 							<table id="table" className="table-auto">
@@ -221,38 +192,29 @@ export default function Dashboard() {
 											<tr key={index}>
 												<td>
 													<p>{eachDay.date}</p>
-													<span>
-														{getDayString(eachDay.date)}
-													</span>
+													<span>{getDayString(eachDay.date)}</span>
 												</td>
 												<td>
 													{eachDay.total_day_income}
 													<sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.total_day_expenses}{" "}
-													<sub>ج.م</sub>
+													{eachDay.total_day_expenses} <sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.expensesEl7ag}{" "}
-													<sub>ج.م</sub>
+													{eachDay.expensesEl7ag} <sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.expensesBassem}{" "}
-													<sub>ج.م</sub>
+													{eachDay.expensesBassem} <sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.total_day_expenses}{" "}
-													<sub>ج.م</sub>
+													{eachDay.total_day_expenses} <sub>ج.م</sub>
 												</td>
 												<td>
-													{eachDay.total_cash}{" "}
-													<sub>ج.م</sub>
+													{eachDay.total_cash} <sub>ج.م</sub>
 												</td>
 												<td className="underline">
-													<Link
-														href={`/dashboard?date=${getDateOfMonth(index + 1)}`}
-													>
+													<Link href={`/dashboard?date=${getDateOfMonth(index + 1)}`}>
 														إضغط لتعديل بيانات اليوم
 													</Link>
 												</td>
@@ -261,11 +223,7 @@ export default function Dashboard() {
 											<tr key={index}>
 												<td>
 													{/* <p>{eachDay.date}</p> */}
-													<span>
-														{getDateOfMonth(
-															index + 1
-														)}
-													</span>
+													<span>{getDateOfMonth(index + 1)}</span>
 												</td>
 												<td>NaN</td>
 												<td>NaN</td>
@@ -274,9 +232,7 @@ export default function Dashboard() {
 												<td>NaN</td>
 												<td>NaN</td>
 												<td className="underline">
-													<Link
-														href={`/dashboard?date=${getDateOfMonth(index + 1)}`}
-													>
+													<Link href={`/dashboard?date=${getDateOfMonth(index + 1)}`}>
 														إضغط لإضافة بيانات اليوم
 													</Link>
 												</td>

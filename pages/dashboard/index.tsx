@@ -10,10 +10,17 @@ import ExpensesHandler from "../../components/ExpensesHandler";
 import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-	const { query } = useRouter();
+	const { query }: any = useRouter();
 	const [todaysFormattedDate, setTodaysFormattedDate] = useState("");
 	useEffect(() => {
-		setTodaysFormattedDate(query.date as string);
+		if (query.date) {
+			const dateParts = query.date.split("-");
+			const year = dateParts[0];
+			const month = dateParts[1];
+			setTodaysFormattedDate(query.date as string);
+			setValue("date", query.date)
+			setCurrentFetchingMonth(`${month}-${year}`);
+		}
 	}, [query.date]);
 	const { register, watch, setValue, handleSubmit, getValues } = useForm();
 	const [success, setSuccess] = useState(false);
@@ -26,7 +33,7 @@ const Home: NextPage = () => {
 			parseInt(watch("carpet_blanket_wash") || 0);
 		setTotalDayIncome(total);
 	}
-	console.log("totalDayExpenses", totalDayExpenses);
+
 	function calculateDayTotalExpenses() {
 		const { custom_inputs_expenses } = getValues();
 		let initVal = 0;
@@ -56,9 +63,7 @@ const Home: NextPage = () => {
 	]);
 
 	// firebase
-	const [currentFetchingMonth, setCurrentFetchingMonth] = useState(
-		format(new Date(), "MM-yyyy")
-	);
+	const [currentFetchingMonth, setCurrentFetchingMonth] = useState("");
 	function submitDayData(data: any) {
 		data.expensesEl7ag = data.expensesEl7ag ? data.expensesEl7ag : 0;
 		data.expensesBassem = data.expensesBassem ? data.expensesBassem : 0;
