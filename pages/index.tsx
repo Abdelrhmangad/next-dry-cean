@@ -1,20 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { format } from "date-fns";
+import { format, getDaysInMonth, setDate } from "date-fns";
 import { database } from "../lib/firebaseConfig";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
+import editIcon from "../public/editIcon.svg";
 
 export default function Dashboard() {
-	const [selectedMonthDays, setSelectedMonthDays] = useState([]);
+	const [selectedMonthDays, setSelectedMonthDays] = useState<[]>([]);
 	const [allMonthIncome, setAllMonthIncome] = useState<number>(0);
 	const [allMonthExpenses, setAllMonthExpenses] = useState<number>(0);
 	const [totalEl7agExpenses, setTotalEl7agExpenses] = useState<number>(0);
 	const [totalBassemExpenses, setTotalBassemExpenses] = useState<number>(0);
 	const [totalMonthIncome, setTotalMonthIncome] = useState<number>(0);
 	const [totalMonthExpenses, setTotalMonthExpenses] = useState<number>(0);
-
 	const [currentFetchingMonth, setCurrentFetchingMonth] = useState(
 		format(new Date(), "MM-yyyy")
 	);
@@ -148,13 +149,34 @@ export default function Dashboard() {
 		// var delDateString = days[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()] + ', ' + date.getFullYear();
 		return `${days[newDate.getDay()]}`;
 	}
+
+	useEffect(() => {
+		getMonthDays();
+	}, [selectedMonthDays.length, currentFetchingMonth]);
+
+	const [combinedArr, setCombinedArr] = useState<[]>([]);
+	function getMonthDays() {
+		const [month, year]: any = currentFetchingMonth.split("-");
+		const date = new Date(year, month); // June 2023
+		const daysInMonth = getDaysInMonth(date);
+		setCombinedArr([
+			...selectedMonthDays,
+			...(Array(daysInMonth - selectedMonthDays.length).fill(0) as [])
+		]);
+	}
+
+	function getDateOfMonth(day: any) {
+		const [month, year]: any = currentFetchingMonth.split("-");
+		const currentDate = new Date(year, month - 1, day);
+		return format(setDate(currentDate, day), "dd-MM-yyyy");
+	}
 	return (
 		<>
 			<Head>
 				<title>دراي كلين الجامعة</title>
 			</Head>
-			<div>
-				<header className="relative">
+			<div className="container px-4">
+				<header className="relative mt-7">
 					<label htmlFor="start" className="font-bold text-lg mb-2">
 						الشهر:
 					</label>
@@ -173,7 +195,7 @@ export default function Dashboard() {
 					></input>
 				</header>
 				<main>
-					<div className="container dashboard-container overflow-x-scroll">
+					<div className="dashboard-container overflow-x-scroll">
 						<div className="dashboard-header">
 							<h1 className="text-center text-xl w-full py-5 font-bold">
 								ايرادات شهر {currentMonth}
@@ -194,15 +216,13 @@ export default function Dashboard() {
 									</tr>
 								</thead>
 								<tbody>
-									{selectedMonthDays.map(
-										(eachDay: any, index) => (
+									{combinedArr.map((eachDay: any, index) =>
+										eachDay !== 0 ? (
 											<tr key={index}>
 												<td>
 													<p>{eachDay.date}</p>
 													<span>
-														{getDayString(
-															eachDay.date
-														)}
+														{getDayString(eachDay.date)}
 													</span>
 												</td>
 												<td>
@@ -231,9 +251,33 @@ export default function Dashboard() {
 												</td>
 												<td className="underline">
 													<Link
-														href={`/dashboard/${eachDay.id}`}
+														href={`/dashboard?date=${getDateOfMonth(index + 1)}`}
 													>
-														أضغط للمزيد
+														إضغط لتعديل بيانات اليوم
+													</Link>
+												</td>
+											</tr>
+										) : (
+											<tr key={index}>
+												<td>
+													{/* <p>{eachDay.date}</p> */}
+													<span>
+														{getDateOfMonth(
+															index + 1
+														)}
+													</span>
+												</td>
+												<td>NaN</td>
+												<td>NaN</td>
+												<td>NaN</td>
+												<td>NaN</td>
+												<td>NaN</td>
+												<td>NaN</td>
+												<td className="underline">
+													<Link
+														href={`/dashboard?date=${getDateOfMonth(index + 1)}`}
+													>
+														إضغط لإضافة بيانات اليوم
 													</Link>
 												</td>
 											</tr>
@@ -249,7 +293,6 @@ export default function Dashboard() {
 									<td>اجمالي مسحويات باسم</td>
 									<td>صافي مصروفات الشهر</td>
 									<td>صافي ايرادات الشهر</td>
-									<td></td>
 								</tr>
 								<tr className="secondBody">
 									<td>{currentMonth}</td>
@@ -272,7 +315,6 @@ export default function Dashboard() {
 									<td>
 										{totalMonthIncome} <sub>ج.م</sub>
 									</td>
-									<td></td>
 								</tr>
 							</table>
 						</div>
