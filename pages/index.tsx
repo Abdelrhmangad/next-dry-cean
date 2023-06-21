@@ -168,7 +168,7 @@ export default function Dashboard() {
 	function getDateOfMonth(day: any) {
 		const [month, year]: any = currentFetchingMonth.split("-");
 		const currentDate = new Date(year, month - 1, day);
-		return format(setDate(currentDate, day), "dd-MM-yyyy");
+		return format(setDate(currentDate, day), "yyyy-MM-dd");
 	}
 	return (
 		<>

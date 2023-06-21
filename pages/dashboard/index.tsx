@@ -7,11 +7,14 @@ import { database } from "../../lib/firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
 import { format } from "date-fns";
 import ExpensesHandler from "../../components/ExpensesHandler";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-	const [todaysFormattedDate, setTodaysFormattedDate] = useState(
-		new Date().toISOString().slice(0, 10)
-	);
+	const { query } = useRouter();
+	const [todaysFormattedDate, setTodaysFormattedDate] = useState("");
+	useEffect(() => {
+		setTodaysFormattedDate(query.date as string);
+	}, [query.date]);
 	const { register, watch, setValue, handleSubmit, getValues } = useForm();
 	const [success, setSuccess] = useState(false);
 	const [totalDayIncome, setTotalDayIncome] = useState(0);
@@ -124,7 +127,12 @@ const Home: NextPage = () => {
 								onChange={(e) => {
 									setValue("date", e.target.value);
 									setTodaysFormattedDate(e.target.value);
-									setCurrentFetchingMonth(format(new Date(e.target.value), "MM-yyyy"))
+									setCurrentFetchingMonth(
+										format(
+											new Date(e.target.value),
+											"MM-yyyy"
+										)
+									);
 								}}
 							/>
 						</div>
